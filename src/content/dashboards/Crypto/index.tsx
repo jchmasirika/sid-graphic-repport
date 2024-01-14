@@ -13,11 +13,8 @@ function DashboardCrypto() {
   return (
     <>
       <Helmet>
-        <title>Crypto Dashboard</title>
+        <title>Admin Dashboard</title>
       </Helmet>
-      <PageTitleWrapper>
-        <PageHeader />
-      </PageTitleWrapper>
       <Container maxWidth="lg">
         <Grid
           container

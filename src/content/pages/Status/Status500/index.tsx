@@ -97,8 +97,8 @@ function Status500() {
                 >
                   Refresh view
                 </LoadingButton>
-                <Button href="/overview" variant="contained" sx={{ ml: 1 }}>
-                  Go back
+                <Button href="/" variant="contained" sx={{ ml: 1 }}>
+                  Accueil
                 </Button>
               </Box>
             </Container>

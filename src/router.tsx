@@ -76,6 +76,11 @@ const StatusMaintenance = Loader(
   lazy(() => import('src/content/pages/Status/Maintenance'))
 );
 
+// Recipes
+const DeviceRecipes = Loader(
+  lazy(() => import('src/content/recipes/DeviceRecipes'))
+);
+
 const routes: RouteObject[] = [
   {
     path: 'default',
@@ -131,33 +136,38 @@ const routes: RouteObject[] = [
     ]
   },
   {
-    path: 'management',
+    path: 'recipes',
     element: <SidebarLayout />,
     children: [
       {
         path: '',
-        element: <Navigate to="transactions" replace />
+        element: <Navigate to="device" replace />
       },
       {
-        path: 'transactions',
+        path: 'device',
+        element: <DeviceRecipes />
+      },
+      {
+        path: 'parking',
         element: <Transactions />
+      }
+    ]
+  },
+  {
+    path: 'ground',
+    element: <SidebarLayout />,
+    children: [
+      {
+        path: '',
+        element: <Navigate to="device" replace />
       },
       {
-        path: 'profile',
-        children: [
-          {
-            path: '',
-            element: <Navigate to="details" replace />
-          },
-          {
-            path: 'details',
-            element: <UserProfile />
-          },
-          {
-            path: 'settings',
-            element: <UserSettings />
-          }
-        ]
+        path: 'device',
+        element: <DeviceRecipes />
+      },
+      {
+        path: 'parking',
+        element: <Transactions />
       }
     ]
   },

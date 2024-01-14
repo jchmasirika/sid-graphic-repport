@@ -12,6 +12,8 @@ import {
 import { NavLink as RouterLink } from 'react-router-dom';
 import { SidebarContext } from 'src/contexts/SidebarContext';
 
+import { PhoneAndroidTwoTone, LocationOnTwoTone } from '@mui/icons-material';
+
 import DesignServicesTwoToneIcon from '@mui/icons-material/DesignServicesTwoTone';
 import BrightnessLowTwoToneIcon from '@mui/icons-material/BrightnessLowTwoTone';
 import MmsTwoToneIcon from '@mui/icons-material/MmsTwoTone';
@@ -180,23 +182,6 @@ function SidebarMenu() {
   return (
     <>
       <MenuWrapper>
-        <List component="div">
-          <SubMenuWrapper>
-            <List component="div">
-              <ListItem component="div">
-                <Button
-                  disableRipple
-                  component={RouterLink}
-                  onClick={closeSidebar}
-                  to="/default/overview"
-                  startIcon={<DesignServicesTwoToneIcon />}
-                >
-                  Accueil
-                </Button>
-              </ListItem>
-            </List>
-          </SubMenuWrapper>
-        </List>
         <List
           component="div"
           subheader={
@@ -215,18 +200,7 @@ function SidebarMenu() {
                   to="/"
                   startIcon={<BrightnessLowTwoToneIcon />}
                 >
-                  Cryptocurrency
-                </Button>
-              </ListItem>
-              <ListItem component="div">
-                <Button
-                  disableRipple
-                  component={RouterLink}
-                  onClick={closeSidebar}
-                  to="/messenger"
-                  startIcon={<MmsTwoToneIcon />}
-                >
-                  Messenger
+                  Accueil
                 </Button>
               </ListItem>
             </List>
@@ -236,7 +210,7 @@ function SidebarMenu() {
           component="div"
           subheader={
             <ListSubheader component="div" disableSticky>
-              Management
+              Recettes
             </ListSubheader>
           }
         >
@@ -247,10 +221,21 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
-                  to="/management/transactions"
-                  startIcon={<TableChartTwoToneIcon />}
+                  to="/recipes/device"
+                  startIcon={<PhoneAndroidTwoTone />}
                 >
-                  Transactions List
+                  Machines
+                </Button>
+              </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/recipes/parking"
+                  startIcon={<LocationOnTwoTone />}
+                >
+                  Parkings
                 </Button>
               </ListItem>
             </List>
@@ -260,7 +245,7 @@ function SidebarMenu() {
           component="div"
           subheader={
             <ListSubheader component="div" disableSticky>
-              Accounts
+              Terrain
             </ListSubheader>
           }
         >
@@ -271,10 +256,10 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
-                  to="/management/profile/details"
-                  startIcon={<AccountCircleTwoToneIcon />}
+                  to="/ground/device"
+                  startIcon={<PhoneAndroidTwoTone />}
                 >
-                  User Profile
+                  Machines
                 </Button>
               </ListItem>
               <ListItem component="div">
@@ -282,10 +267,10 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
-                  to="/management/profile/settings"
-                  startIcon={<DisplaySettingsTwoToneIcon />}
+                  to="/ground/parking"
+                  startIcon={<LocationOnTwoTone />}
                 >
-                  Account Settings
+                  Parkings
                 </Button>
               </ListItem>
             </List>
@@ -418,7 +403,7 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
-                  to="/status/404"
+                  to="/default/status/404"
                   startIcon={<CheckBoxTwoToneIcon />}
                 >
                   Error 404
@@ -429,7 +414,7 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
-                  to="/status/500"
+                  to="/default/status/500"
                   startIcon={<CameraFrontTwoToneIcon />}
                 >
                   Error 500
@@ -440,7 +425,7 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
-                  to="/status/coming-soon"
+                  to="/default/status/coming-soon"
                   startIcon={<ChromeReaderModeTwoToneIcon />}
                 >
                   Coming Soon
@@ -451,7 +436,7 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
-                  to="/status/maintenance"
+                  to="/default/status/maintenance"
                   startIcon={<WorkspacePremiumTwoToneIcon />}
                 >
                   Maintenance
