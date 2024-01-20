@@ -81,6 +81,8 @@ const DeviceRecipes = Loader(
   lazy(() => import('src/content/recipes/DeviceRecipes'))
 );
 
+const ParkingRecipes = Loader(lazy(() => import('src/content/recipes/ParkingRecipes')));
+
 const routes: RouteObject[] = [
   {
     path: 'default',
@@ -149,7 +151,7 @@ const routes: RouteObject[] = [
       },
       {
         path: 'parking',
-        element: <Transactions />
+        element: <ParkingRecipes />
       }
     ]
   },

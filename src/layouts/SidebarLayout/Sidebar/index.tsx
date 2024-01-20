@@ -9,16 +9,12 @@ import {
   styled,
   Divider,
   useTheme,
-  Button,
   lighten,
   darken,
-  Tooltip,
-  Avatar,
   Typography
 } from '@mui/material';
 
 import SidebarMenu from './SidebarMenu';
-import logo from 'src/assets/images/logo.jpg';
 
 const SidebarWrapper = styled(Box)(
   ({ theme }) => `
@@ -96,7 +92,7 @@ function Sidebar() {
                   width: 52
                 }}
               >
-                <img src={logo} alt='logo SID' />
+                <Typography variant='h2' sx={{ textAlign: 'center' }}>Dashboard</Typography>
               </Box>
             </Box>
             <Divider

@@ -70,9 +70,9 @@ function Header() {
       >
         <HeaderMenu />
       </Stack>
-      {/* <Box display="flex" alignItems="center">
-        <HeaderButtons />
-        <HeaderUserbox />
+      <Box display="flex" alignItems="center">
+        {/* <HeaderButtons />
+        <HeaderUserbox /> */}
         <Box
           component="span"
           sx={{
@@ -90,7 +90,7 @@ function Header() {
             </IconButton>
           </Tooltip>
         </Box>
-      </Box> */}
+      </Box>
     </HeaderWrapper>
   );
 }

@@ -4,7 +4,6 @@ import {
     Container,
     TextField,
     Card,
-    Divider,
     CardHeader,
     CardContent,
     IconButton,
@@ -14,13 +13,14 @@ import {
     List,
     ListItem,
     ListItemText,
-    ListItemAvatar
+    ListItemAvatar,
+    Divider
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { endOfMonth, startOfMonth } from "date-fns";
 import { useEffect, useState } from "react";
-import { Device, Session } from "./types";
-import { DEVICE_BILLERS, PARKING_SESSIONS } from "./api";
+import { Parking, Session } from "./types";
+import { PARKINGS, PARKING_SESSIONS } from "./api";
 import { Collection } from "src/api/types";
 import { Check, SearchOutlined } from "@mui/icons-material";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
@@ -28,21 +28,21 @@ import { LineChart } from "@mui/x-charts";
 import ReactApexChart from "react-apexcharts";
 
 
-const DeviceRecipes: React.FC = () => {
-    const [code, setCode] = useState(''); // Code of device
+const ParkingRecipes: React.FC = () => {
+    const [search, setSearch] = useState(''); // Code of device
     const [date, setDate] = useState(startOfMonth(Date.now()));
-    const [sessionsQuery, { data, loading, error }] = useLazyQuery<{ parkingSessions: Collection<Session>}, { before: string, after: string/*, parking?: string */, device?: string }>(PARKING_SESSIONS);
+    const [sessionsQuery, { data, loading, error }] = useLazyQuery<{ parkingSessions: Collection<Session>}, { before: string, after: string, parking?: string }>(PARKING_SESSIONS);
     const [chart, setChart] = useState<{ xAxis: any, totals: any[], receiveds: any[], missings: any[], invoiceMissings: any[]}>();
-    const [devicesQuery, { data: devices, loading: devicesLoading, error: devicesError }] = useLazyQuery<{ deviceBillers: Collection<Device>}, { code: string }>(DEVICE_BILLERS);
-    const [device, setDevice] = useState<Device|undefined>();
+    const [parkingsQuery, { data: parkingsData, loading: parkingLoading, error: parkingError }] = useLazyQuery<{ parkings: Collection<Parking>}, { name: string }>(PARKINGS);
+    const [parking, setParking] = useState<Parking|undefined>();
 
     const getSessions = () => {
-        if(device){
+        if(parking) {
             sessionsQuery({
                 variables: {
                     after: date.toISOString(),
                     before: endOfMonth(date).toISOString(),
-                    device: device.code
+                    parking: parking.id
                 }
             });
         }
@@ -51,6 +51,7 @@ const DeviceRecipes: React.FC = () => {
     const goToThisMonth = () => {
         setDate(startOfMonth(Date.now()));
     }
+
     useEffect(() => {
         // TODO: Conversion des dates de fin de sessions en date locale pour une cohérence des informations
         if(data) {
@@ -74,17 +75,16 @@ const DeviceRecipes: React.FC = () => {
     }, [data, error]);
 
     useEffect(() => {
-        if(device) {
-            getSessions();
+        if(search.length >= 2) {
+            parkingsQuery({ variables: { name: search }});
         }
-    }, [device, date]);
-
+    }, [search]);
 
     useEffect(() => {
-        if(code.length >= 4) {
-            devicesQuery({ variables: { code }});
+        if(parking) {
+            getSessions();
         }
-    }, [code]);
+    }, [parking, date])
 
     return (
       <Container maxWidth="lg">
@@ -100,14 +100,15 @@ const DeviceRecipes: React.FC = () => {
             <Card>
                 <CardContent>
                     <TextField
-                        value={code}
+                        value={search}
                         onChange={({ target: { value }}) => {
-                            setCode(value);
+                            setSearch(value);
                         }}
-                        id="serie_number"
-                        label="Numéro serie"
-                        placeholder="e.g LUB150"
+                        fullWidth
                         autoFocus
+                        id="serie_number"
+                        label="Parking"
+                        placeholder="Nom du parking"
                     />
                 </CardContent>
             </Card>
@@ -116,10 +117,10 @@ const DeviceRecipes: React.FC = () => {
                 <CardContent>
                     <List>
                         {
-                            devices?.deviceBillers.edges.slice(0,10).map(({ node }, index) => (
-                                <ListItem key={index.toString()} onClick={() => setDevice(node)}>
-                                    <ListItemText primary={node.code} secondary={'Site: ' + node.site.name + (node.state ?  ' - Statut: ' + node.state : '')} />
-                                    {device?.id === node?.id && (
+                            parkingsData?.parkings.edges.slice(0,10).map(({ node }, index) => (
+                                <ListItem key={index.toString()} onClick={() => setParking(node)}>
+                                    <ListItemText primary={node.name} secondary={node.site.name} />
+                                    {parking?.id === node?.id && (
                                         <ListItemAvatar>
                                             <Check color="primary" />
                                         </ListItemAvatar>
@@ -127,15 +128,11 @@ const DeviceRecipes: React.FC = () => {
                                 </ListItem>
                             ))
                         }
-                        {!devices && (
-                            <ListItem>
-                                <ListItemText primary='Recherchez une machine' />
-                            </ListItem>
+                        {!parkingsData && (
+                            <ListItem><ListItemText primary='Recherchez un parking' /></ListItem>
                         )}
-                        {   devices?.deviceBillers.totalCount === 0 && (
-                            <ListItem>
-                                <ListItemText primary='Aucun résultat trouvé !' />
-                            </ListItem>
+                        {   parkingsData?.parkings.totalCount === 0 && (
+                            <ListItem><ListItemText primary='Aucun résultat trouvé !' /></ListItem>
                         )}
                     </List>
                 </CardContent>
@@ -148,7 +145,7 @@ const DeviceRecipes: React.FC = () => {
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <DatePicker
                             views={['month', 'year']}
-                            label="Date"
+                            label="Période"
                             openTo="month"
                             value={date}
                             onChange={(value) => {
@@ -157,15 +154,14 @@ const DeviceRecipes: React.FC = () => {
                             renderInput={(params) => <TextField {...params} helperText={null} />}
                         />
                     </LocalizationProvider>
-
                     <Button onClick={goToThisMonth}>Ce mois</Button>
-                    
-                    { (loading || devicesLoading) && <CircularProgress size={25} />}
+                    { (loading || parkingLoading) && <CircularProgress size={25} />}
                 </CardContent>
             </Card>
             <br />
+            
             <Card>
-                <CardHeader title="Recette de la machine" />
+                <CardHeader title={parking ? parking?.name.toUpperCase() + ' - Site: ' + parking?.site?.name : 'Aucun parking !'} />
                 <Divider />
                 <CardContent>
                     { chart && (
@@ -185,7 +181,7 @@ const DeviceRecipes: React.FC = () => {
             </Card>
             <br />
             <Card >
-                <CardHeader title={"Rapport global  - Total machine: " + (chart ? chart.totals.reduce((previous, next) => previous + next , 0) : 0) + " CDF"} />
+                <CardHeader title={"Rapport global  - Total machine: " + (chart ? chart.totals.reduce((previous, next) => previous + next, 0) : 0) + " CDF"} />
                 <CardContent>                    
                     {chart && (
                         <ReactApexChart
@@ -205,4 +201,4 @@ const DeviceRecipes: React.FC = () => {
     );
 }
 
-export default DeviceRecipes;
+export default ParkingRecipes;

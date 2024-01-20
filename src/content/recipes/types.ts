@@ -1,27 +1,40 @@
 export type Session = {
-    device: Device,
-    parking: Parking,
-    account: Account 
+    device: Device;
+    parking: Parking;
+    account: Account;
+    total: number;
+    missing: number;
+    invoiceMissing: number;
+    endAt: string;
+    state?: string;
 };
 
 export type Device = {
-    code: string,
+    id?: string;
+    code: string;
+    state?: string;
     site?: {
-        name?: string
+        name?: string;
+        id: string;
+        _id?: number;
     }
 }
 
 export type Parking = {
-    name: string,
+    id: string;
+    _id?: number;
+    name: string;
     site?: {
-        name?: string
+        name?: string;
+        id: string;
+        _id?: number;
     }
 }
 
 export type Account = {
-    id: string,
-    username: string,
+    id: string;
+    username: string;
     person: {
-        name: string
+        name: string;
     }
 }
