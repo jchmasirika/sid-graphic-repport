@@ -6,7 +6,6 @@ import {
     Card,
     CardHeader,
     CardContent,
-    IconButton,
     CircularProgress,
     Button,
     Typography,
@@ -14,7 +13,9 @@ import {
     ListItem,
     ListItemText,
     ListItemAvatar,
-    Divider
+    Divider,
+    Switch,
+    FormControlLabel
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { endOfMonth, startOfMonth } from "date-fns";
@@ -35,6 +36,7 @@ const ParkingRecipes: React.FC = () => {
     const [chart, setChart] = useState<{ xAxis: any, totals: any[], receiveds: any[], missings: any[], invoiceMissings: any[]}>();
     const [parkingsQuery, { data: parkingsData, loading: parkingLoading, error: parkingError }] = useLazyQuery<{ parkings: Collection<Parking>}, { name: string }>(PARKINGS);
     const [parking, setParking] = useState<Parking|undefined>();
+    const [trigger, setTrigger] = useState<'item'|'axis'>('axis');
 
     const getSessions = () => {
         if(parking) {
@@ -164,6 +166,13 @@ const ParkingRecipes: React.FC = () => {
                 <CardHeader title={parking ? parking?.name.toUpperCase() + ' - Site: ' + parking?.site?.name : 'Aucun parking !'} />
                 <Divider />
                 <CardContent>
+                    <FormControlLabel 
+                        control={
+                            <Switch 
+                                checked={trigger === 'item' } 
+                                onClick={() => setTrigger(trigger === 'axis' ? 'item' : 'axis')} />
+                        }
+                        label='Info bulle sur les items'/>
                     { chart && (
                         <LineChart
                             xAxis={[{ data: chart.xAxis, scaleType: 'point' }]}
@@ -174,6 +183,7 @@ const ParkingRecipes: React.FC = () => {
                                 { data: chart.invoiceMissings, label: 'Ratés', color: 'orange' },
                             ]}
                             height={300}
+                            tooltip={{ trigger }}
                         />
                     )}
                     {!chart && <Typography>Aucun contenu récupéré !</Typography>}

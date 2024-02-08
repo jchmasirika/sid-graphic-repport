@@ -38,3 +38,14 @@ export type Account = {
         name: string;
     }
 }
+
+export type Site = {
+    id: string;
+    name: string;
+    state: string;
+    sectionsArray: {
+        id: number|string,
+        name: string;
+    }[];
+    sessions?: { total: number; missing: number; invoicesMissing: number}
+}

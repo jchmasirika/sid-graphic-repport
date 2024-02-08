@@ -83,6 +83,9 @@ const DeviceRecipes = Loader(
 
 const ParkingRecipes = Loader(lazy(() => import('src/content/recipes/ParkingRecipes')));
 
+const DashboardRecipes = Loader(lazy(() => import('src/content/recipes/Dashboard')));
+const DaylyDashboardRecipes = Loader(lazy(() => import('src/content/recipes/DaylyDashboard')));
+
 const routes: RouteObject[] = [
   {
     path: 'default',
@@ -129,11 +132,12 @@ const routes: RouteObject[] = [
     children: [
       {
         path: '/',
-        element: <Crypto />
+        element: <DashboardRecipes />
+        // element: <Crypto />
       },
       {
-        path: 'messenger',
-        element: <Messenger />
+        path: 'dayly',
+        element: <DaylyDashboardRecipes />
       }
     ]
   },

@@ -14,7 +14,8 @@ import {
     List,
     ListItem,
     ListItemText,
-    ListItemAvatar
+    ListItemAvatar,
+    LinearProgress
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { endOfMonth, startOfMonth } from "date-fns";
@@ -160,13 +161,12 @@ const DeviceRecipes: React.FC = () => {
 
                     <Button onClick={goToThisMonth}>Ce mois</Button>
                     
-                    { (loading || devicesLoading) && <CircularProgress size={25} />}
                 </CardContent>
             </Card>
             <br />
             <Card>
                 <CardHeader title="Recette de la machine" />
-                <Divider />
+                { (loading || devicesLoading) ? <LinearProgress sx={{ marginX: 10 }} /> : <Divider /> }
                 <CardContent>
                     { chart && (
                         <LineChart
@@ -186,6 +186,7 @@ const DeviceRecipes: React.FC = () => {
             <br />
             <Card >
                 <CardHeader title={"Rapport global  - Total machine: " + (chart ? chart.totals.reduce((previous, next) => previous + next , 0) : 0) + " CDF"} />
+                { (loading || devicesLoading) ? <LinearProgress sx={{ marginX: 10 }} /> : <Divider /> }
                 <CardContent>                    
                     {chart && (
                         <ReactApexChart

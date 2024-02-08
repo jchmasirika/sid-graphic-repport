@@ -12,7 +12,7 @@ import {
 import { NavLink as RouterLink } from 'react-router-dom';
 import { SidebarContext } from 'src/contexts/SidebarContext';
 
-import { PhoneAndroidTwoTone, LocationOnTwoTone } from '@mui/icons-material';
+import { PhoneAndroidTwoTone, LocationOnTwoTone, Today } from '@mui/icons-material';
 
 import DesignServicesTwoToneIcon from '@mui/icons-material/DesignServicesTwoTone';
 import BrightnessLowTwoToneIcon from '@mui/icons-material/BrightnessLowTwoTone';
@@ -201,6 +201,17 @@ function SidebarMenu() {
                   startIcon={<BrightnessLowTwoToneIcon />}
                 >
                   Accueil
+                </Button>
+              </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/dayly"
+                  startIcon={<Today />}
+                >
+                  Recette du jour
                 </Button>
               </ListItem>
             </List>

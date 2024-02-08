@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const PARKING_SESSIONS = gql `
-    query getParkingSessions($device: String, $parking: String, $before: String!, $after: String!){
-        parkingSessions(device_code: $device, parking: $parking, endAt: { before: $before, after: $after }) {
+    query getParkingSessions($device: String, $parking: String, $sites: [String], $before: String!, $after: String!, $endCursor: String){
+        parkingSessions(device_code: $device, parking: $parking, parking_site_list: $sites, after: $endCursor, endAt: { before: $before, after: $after }) {
             totalCount
             edges {
                 cursor
@@ -67,6 +67,23 @@ export const DEVICE_BILLERS = gql `
                         _id
                         id
                     }
+                }
+            }
+        }
+    }
+`;
+
+export const PARKING_SITES = gql `
+    query getParkingSites($after: String) {
+        taxeParkingSites(after: $after) {
+            totalCount
+            edges {
+                node {
+                    id
+                    _id
+                    name
+                    sectionsArray
+                    state
                 }
             }
         }
