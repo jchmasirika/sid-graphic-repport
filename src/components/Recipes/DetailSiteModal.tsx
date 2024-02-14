@@ -83,6 +83,7 @@ const DetailSiteModal: React.FC<{ sessions: Session[], site: Site, open: boolean
                         </Table>
                     </>
                 )}
+                <br />
             </DialogContent>
         </Dialog>
     )

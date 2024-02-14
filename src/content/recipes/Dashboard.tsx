@@ -31,14 +31,13 @@ import { useEffect, useState } from "react";
 import { Site } from "./types";
 import { PARKING_SITES } from "./api";
 import { Collection, QueryData } from "src/api/types";
-import { Check, ExpandCircleDownSharp, SearchOutlined, Today } from "@mui/icons-material";
+import { Check, ExpandCircleDownSharp, HighlightOff, SearchOutlined, Today } from "@mui/icons-material";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import Chart from "src/components/Recipes/Chart";
 import { useQuery } from "src/api/query";
 
 
 const DashboardRecipes: React.FC = () => {
-    const [search, setSearch] = useState(''); // Site name
     const [date, setDate] = useState(startOfMonth(Date.now()));
     // const [sitesQuery, { data , loading, error }] = useLazyQuery<{ taxeParkingSites: Collection<Site>}>(PARKING_SITES);
     const { fetch, data: sites, loading, error } = useQuery<Site, { taxeParkingSites: Collection<Site>}>(PARKING_SITES);
@@ -73,10 +72,11 @@ const DashboardRecipes: React.FC = () => {
             <Card>
                 <CardContent>
                     <FormControl fullWidth>
-                        <InputLabel id="demo-multiple-name-label">Name</InputLabel>
+                        <InputLabel id="demo-multiple-name-label">Site</InputLabel>
                             <Select
                                 labelId="demo-multiple-name-label"
                                 label='Site'
+                                placeholder="Sélectionner un site"
                                 multiple
                                 value={selectedSites}
                                 onChange={({target: { value }}) => {
@@ -127,6 +127,14 @@ const DashboardRecipes: React.FC = () => {
                         <Chart site={site} date={date} endDate={endOfMonth(date)} adaptBy="day" />
                     </Grid>
                 ))}
+                {selectedSites.length === 0 && (
+                    <Grid item xs={12} sx={{ textAlign: 'center', paddingTop: 3 }}>
+                        <br />
+                        <br />
+                        <HighlightOff sx={{ fontSize: 40 }}/>
+                        <Typography sx={{ textAlign: 'center', fontSize: 20 }}>Aucun site selectionné !</Typography>
+                    </Grid>
+                )}
             </Grid>
             <br />
         </Grid>

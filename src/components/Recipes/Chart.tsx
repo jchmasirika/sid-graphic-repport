@@ -4,11 +4,11 @@ import LinearChart from "./LinearChart"
 import { AdaptBy } from "src/api/session-adaptator";
 import { useQuery } from "src/api/query";
 import { Collection } from "src/api/types";
-import endOfMonth from "date-fns/endOfMonth";
 import { PARKING_SESSIONS } from "src/content/recipes/api";
-import { ReactNode, useEffect, useState } from "react";
-import { Box, Card, CardContent, CardHeader, Dialog, Divider, FormControlLabel, LinearProgress, Modal, Switch, Tooltip, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Box, Card, CardContent, CardHeader, Chip, Dialog, Divider, FormControlLabel, LinearProgress, Modal, Switch, Tooltip, Typography } from "@mui/material";
 import DetailSiteModal from "./DetailSiteModal";
+import { numericFormatter } from "react-number-format";
 
 const Chart: React.FC<{
     site: Site,
@@ -20,10 +20,11 @@ const Chart: React.FC<{
 
     const { fetch, data: sessions, loading } = useQuery<Session, { parkingSessions: Collection<Session> }, { before: string, after: string, sites: string[]}>(PARKING_SESSIONS);
     const [type, setType] = useState<'donut'|'line'|'bar'>(chartType);
-    const [infos, setInfos] = useState<{ total: number, missing: number, invoicesMissing: number }|undefined>({
+    const [infos, setInfos] = useState<{ total: number, missing: number, invoicesMissing: number, received: number }|undefined>({
         total: 0,
         missing: 0,
-        invoicesMissing: 0
+        invoicesMissing: 0,
+        received: 0
     });
     const [showModal, setShowModal] = useState(false);
 
@@ -46,15 +47,18 @@ const Chart: React.FC<{
     }, [site, date]);
 
     useEffect(() => {
-
         if(sessions) {
+            const total = sessions.map(session => session.total).reduce((a, b) => a + b, 0);
+            const missing =  sessions.map(session => session.missing).reduce((a, b) => a + b, 0);
+            const invoicesMissing =  sessions.map(session => session.invoiceMissing).reduce((a, b) => a + b, 0);
             setInfos({
-                total: sessions.map(session => session.total).reduce((a, b) => a + b),
-                missing: sessions.map(session => session.missing).reduce((a, b) => a + b),
-                invoicesMissing: sessions.map(session => session.invoiceMissing).reduce((a, b) => a + b),
+                total,
+                missing,
+                invoicesMissing,
+                received: total - missing - invoicesMissing
             });
         }
-    }, []);
+    },[sessions]);
 
     let chart = null;
 
@@ -70,8 +74,13 @@ const Chart: React.FC<{
     return (
         <Box>
             <Card>
-                <CardHeader onClick={() => setShowModal(true)} title={site.name} subheader={'Total machine: CDF ' + infos.total + ' - Manquant: CDF ' + infos.missing + ' - Ratés: CDF ' + infos.invoicesMissing} />
+                <CardHeader onClick={() => setShowModal(true)} title={site.name} />
                 { loading ? <LinearProgress sx={{ marginX: 5 }} /> : <Divider />}
+                <Typography sx={{ marginLeft: 2, marginTop: 1}}>Montant Machine CDF: {numericFormatter(infos.total.toString(), {thousandSeparator: ' ' })}</Typography>
+                <Typography sx={{ marginLeft: 2}}>Montant récçu CDF: {numericFormatter(infos.received.toString(), {thousandSeparator: ' ' })}</Typography>
+                <Typography sx={{ marginLeft: 2}}>Manquant CDF: {numericFormatter(infos.missing.toString(), {thousandSeparator: ' ' })}</Typography>
+                <Typography sx={{ marginLeft: 2}}>Factures ractés CDF: {numericFormatter(infos.invoicesMissing.toString(), {thousandSeparator: ' ' })}</Typography>
+
                 <FormControlLabel sx={{ padding: 2}} control={<Switch checked={type === 'donut'} onClick={() => setType(type === 'line' ? 'donut' : 'line')} />} label='Donut' />
                 <CardContent>
                     {chart}

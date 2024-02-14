@@ -19,7 +19,11 @@ import {
     Popover,
     Tooltip,
     Badge,
-    Chip
+    Chip,
+    InputLabel,
+    FormControl,
+    Select,
+    MenuItem
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { endOfDay, endOfMonth, startOfDay, startOfMonth } from "date-fns";
@@ -27,18 +31,18 @@ import { useEffect, useState } from "react";
 import { Site } from "./types";
 import { PARKING_SITES } from "./api";
 import { Collection, QueryData } from "src/api/types";
-import { Check, SearchOutlined, Today } from "@mui/icons-material";
+import { Check, HighlightOff, SearchOutlined, Today } from "@mui/icons-material";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import Chart from "src/components/Recipes/Chart";
 import { useQuery } from "src/api/query";
 
 
 const DaylyDashboardRecipes: React.FC = () => {
-    const [search, setSearch] = useState(''); // Site name
     const [date, setDate] = useState(startOfDay(Date.now()));
     // const [sitesQuery, { data , loading, error }] = useLazyQuery<{ taxeParkingSites: Collection<Site>}>(PARKING_SITES);
     const { fetch, data: sites, loading, error } = useQuery<Site, { taxeParkingSites: Collection<Site>}>(PARKING_SITES);
-    
+    const[selectedSites, setSelectedSites] = useState<Site[]>([]);
+
     const goToToday = () => {
         setDate(startOfDay(Date.now()));
     };
@@ -67,16 +71,23 @@ const DaylyDashboardRecipes: React.FC = () => {
             <br />
             <Card>
                 <CardContent>
-                    <TextField
-                        value={search}
-                        onChange={({ target: { value }}) => {
-                            setSearch(value);
-                        }}
-                        id="serie_number"
-                        label="Site"
-                        autoFocus
-                        fullWidth
-                    />
+                    <FormControl fullWidth>
+                        <InputLabel id="demo-multiple-name-label">Name</InputLabel>
+                            <Select
+                                labelId="demo-multiple-name-label"
+                                label='Site'
+                                multiple
+                                value={selectedSites}
+                                onChange={({target: { value }}) => {
+                                    setSelectedSites(typeof value !== 'string' ? value : []);
+                                }}
+                                fullWidth
+                            >
+                                {sites?.sort(sortByName).map(site => (
+                                    <MenuItem key={site.id.toString()} value={site}>{site.name}</MenuItem>
+                                ))}
+                            </Select>
+                    </FormControl>
                 </CardContent>
             </Card>
         </Grid>
@@ -110,13 +121,21 @@ const DaylyDashboardRecipes: React.FC = () => {
         <Grid item xs={12}>
             { loading && <LinearProgress sx={{ marginX: 5 }} />}
             <Grid container spacing={2}>
-                {sites?.sort(sortByName).filter((site) => site.name.toLowerCase().includes(search.toLowerCase())).map((site, index) => (
+                {selectedSites?.sort(sortByName).map((site, index) => (
                     <Grid item xs={12} md={6} key={index + ''}>
                         <Tooltip placement="bottom" title={site?.sectionsArray.length - 1 > 0 ? site.sectionsArray.map(site => site.name).join(', ') : 'Aucun sous site'}>
                             <Chart site={site} date={date} endDate={endOfDay(date)} adaptBy="day" chartType='donut' />
                         </Tooltip>
                     </Grid>
                 ))}
+                {selectedSites.length === 0 && (
+                    <Grid item xs={12} sx={{ textAlign: 'center' }}>
+                        <br />
+                        <br />
+                        <HighlightOff sx={{ fontSize: 40 }}/>
+                        <Typography sx={{ textAlign: 'center', fontSize: 20 }}>Aucun site selectionné !</Typography>
+                    </Grid>
+                )}
             </Grid>
         </Grid>
       </Grid>
