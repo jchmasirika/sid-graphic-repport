@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { Session } from "src/content/recipes/types";
 
-export type AdaptBy = 'parking'|'site'|'parking-site'|'day'
+export type AdaptBy = 'parking'|'site'|'day';
 
 export function adaptSessionData(data: Session[], adaptBy: AdaptBy) {
     const map = new Map<string, { total: number, missing: number, invoiceMissing: number, received: number }>([]);
@@ -14,13 +14,10 @@ export function adaptSessionData(data: Session[], adaptBy: AdaptBy) {
             
             switch(adaptBy) {
               case 'parking': 
-                key = parking?._id + '%' + parking?.name;
+                key = parking.id;
                 break;
               case 'site':
-                key = parking?.site?._id + '%' + parking?.site?.name;
-                break;
-              case 'parking-site':
-                key = parking?.site?._id + '%' + parking?.site?.name + '%' + parking?._id + '%' + parking?.name;
+                key = parking.site.id;
                 break;
               case 'day': 
                 key = date.getDate().toString();

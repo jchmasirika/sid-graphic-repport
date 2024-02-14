@@ -9,8 +9,8 @@ import * as serviceWorker from 'src/serviceWorker';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
 const client = new ApolloClient({
-  // uri: 'https://www.sid-sarl.net/api/graphql',
-  uri: 'https://127.0.0.1:8000/api/graphql',
+  uri: 'https://www.sid-sarl.net/api/graphql',
+  // uri: 'https://127.0.0.1:8000/api/graphql',
   cache: new InMemoryCache(),
 });
 

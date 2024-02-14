@@ -19,7 +19,11 @@ import {
     Popover,
     Tooltip,
     Badge,
-    Chip
+    Chip,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { endOfMonth, startOfMonth } from "date-fns";
@@ -27,7 +31,7 @@ import { useEffect, useState } from "react";
 import { Site } from "./types";
 import { PARKING_SITES } from "./api";
 import { Collection, QueryData } from "src/api/types";
-import { Check, SearchOutlined, Today } from "@mui/icons-material";
+import { Check, ExpandCircleDownSharp, SearchOutlined, Today } from "@mui/icons-material";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import Chart from "src/components/Recipes/Chart";
 import { useQuery } from "src/api/query";
@@ -38,6 +42,7 @@ const DashboardRecipes: React.FC = () => {
     const [date, setDate] = useState(startOfMonth(Date.now()));
     // const [sitesQuery, { data , loading, error }] = useLazyQuery<{ taxeParkingSites: Collection<Site>}>(PARKING_SITES);
     const { fetch, data: sites, loading, error } = useQuery<Site, { taxeParkingSites: Collection<Site>}>(PARKING_SITES);
+    const[selectedSites, setSelectedSites] = useState<Site[]>([]);
     
     const goToThisMonth = () => {
         setDate(startOfMonth(Date.now()));
@@ -67,16 +72,23 @@ const DashboardRecipes: React.FC = () => {
             <br />
             <Card>
                 <CardContent>
-                    <TextField
-                        value={search}
-                        onChange={({ target: { value }}) => {
-                            setSearch(value);
-                        }}
-                        id="serie_number"
-                        label="Site"
-                        autoFocus
-                        fullWidth
-                    />
+                    <FormControl fullWidth>
+                        <InputLabel id="demo-multiple-name-label">Name</InputLabel>
+                            <Select
+                                labelId="demo-multiple-name-label"
+                                label='Site'
+                                multiple
+                                value={selectedSites}
+                                onChange={({target: { value }}) => {
+                                    setSelectedSites(typeof value !== 'string' ? value : []);
+                                }}
+                                fullWidth
+                            >
+                                {sites?.sort(sortByName).map(site => (
+                                    <MenuItem key={site.id.toString()} value={site}>{site.name}</MenuItem>
+                                ))}
+                            </Select>
+                    </FormControl>
                 </CardContent>
             </Card>
         </Grid>
@@ -107,17 +119,16 @@ const DashboardRecipes: React.FC = () => {
             </Card>
         </Grid>
         <br />
-        <Grid item xs={12}>
+        <Grid item xs={12} sx={{ marginBottom: 5 }}>
             { loading && <LinearProgress sx={{ marginX: 5 }} />}
             <Grid container spacing={2}>
-                {sites?.sort(sortByName).filter((site) => site.name.toLowerCase().includes(search.toLowerCase())).map((site, index) => (
+                {selectedSites?.sort(sortByName).map((site, index) => (
                     <Grid item xs={12} md={6} key={index + ''}>
-                        <Tooltip placement="bottom" title={site?.sectionsArray.length - 1 > 0 ? site.sectionsArray.map(site => site.name).join(', ') : 'Aucun sous site'}>
-                            <Chart site={site} date={date} endDate={endOfMonth(date)} adaptBy="day" />
-                        </Tooltip>
+                        <Chart site={site} date={date} endDate={endOfMonth(date)} adaptBy="day" />
                     </Grid>
                 ))}
             </Grid>
+            <br />
         </Grid>
       </Grid>
     </Container>

@@ -24,7 +24,7 @@ export type Parking = {
     id: string;
     _id?: number;
     name: string;
-    site?: {
+    site: {
         name?: string;
         id: string;
         _id?: number;
@@ -47,5 +47,4 @@ export type Site = {
         id: number|string,
         name: string;
     }[];
-    sessions?: { total: number; missing: number; invoicesMissing: number}
 }
