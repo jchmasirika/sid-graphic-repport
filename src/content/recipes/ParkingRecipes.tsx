@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { endOfMonth, startOfMonth } from "date-fns";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Parking, Session } from "./types";
 import { PARKINGS, PARKING_SESSIONS } from "./api";
 import { Collection } from "src/api/types";
@@ -27,6 +27,7 @@ import { Check, SearchOutlined } from "@mui/icons-material";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import { LineChart } from "@mui/x-charts";
 import ReactApexChart from "react-apexcharts";
+import { AuthtContext } from "src/api/account";
 
 
 const ParkingRecipes: React.FC = () => {
@@ -34,7 +35,9 @@ const ParkingRecipes: React.FC = () => {
     const [date, setDate] = useState(startOfMonth(Date.now()));
     const [sessionsQuery, { data, loading, error }] = useLazyQuery<{ parkingSessions: Collection<Session>}, { before: string, after: string, parking?: string }>(PARKING_SESSIONS);
     const [chart, setChart] = useState<{ xAxis: any, totals: any[], receiveds: any[], missings: any[], invoiceMissings: any[]}>();
-    const [parkingsQuery, { data: parkingsData, loading: parkingLoading, error: parkingError }] = useLazyQuery<{ parkings: Collection<Parking>}, { name: string }>(PARKINGS);
+    
+    const { person: { site }} = useContext(AuthtContext);
+    const [parkingsQuery, { data: parkingsData, loading: parkingLoading, error: parkingError }] = useLazyQuery<{ parkings: Collection<Parking>}, { name: string, sites?: string[] }>(PARKINGS);
     const [parking, setParking] = useState<Parking|undefined>();
     const [trigger, setTrigger] = useState<'item'|'axis'>('axis');
 
@@ -78,7 +81,7 @@ const ParkingRecipes: React.FC = () => {
 
     useEffect(() => {
         if(search.length >= 2) {
-            parkingsQuery({ variables: { name: search }});
+            parkingsQuery({ variables: { name: search, sites: site.sectionsArray.map((section) => section.id + '') }});
         }
     }, [search]);
 

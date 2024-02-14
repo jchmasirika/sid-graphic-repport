@@ -40,6 +40,7 @@ export type Account = {
 }
 
 export type Site = {
+    _id: number|string;
     id: string;
     name: string;
     state: string;

@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { endOfMonth, startOfMonth } from "date-fns";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Device, Session } from "./types";
 import { DEVICE_BILLERS, PARKING_SESSIONS } from "./api";
 import { Collection } from "src/api/types";
@@ -27,6 +27,7 @@ import { Check, SearchOutlined } from "@mui/icons-material";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import { LineChart } from "@mui/x-charts";
 import ReactApexChart from "react-apexcharts";
+import { AuthtContext } from "src/api/account";
 
 
 const DeviceRecipes: React.FC = () => {
@@ -34,7 +35,9 @@ const DeviceRecipes: React.FC = () => {
     const [date, setDate] = useState(startOfMonth(Date.now()));
     const [sessionsQuery, { data, loading, error }] = useLazyQuery<{ parkingSessions: Collection<Session>}, { before: string, after: string/*, parking?: string */, device?: string }>(PARKING_SESSIONS);
     const [chart, setChart] = useState<{ xAxis: any, totals: any[], receiveds: any[], missings: any[], invoiceMissings: any[]}>();
-    const [devicesQuery, { data: devices, loading: devicesLoading, error: devicesError }] = useLazyQuery<{ deviceBillers: Collection<Device>}, { code: string }>(DEVICE_BILLERS);
+    
+    const { person: { site }} = useContext(AuthtContext);
+    const [devicesQuery, { data: devices, loading: devicesLoading, error: devicesError }] = useLazyQuery<{ deviceBillers: Collection<Device>}, { code: string, sites?: string[] }>(DEVICE_BILLERS);
     const [device, setDevice] = useState<Device|undefined>();
 
     const getSessions = () => {
@@ -83,7 +86,7 @@ const DeviceRecipes: React.FC = () => {
 
     useEffect(() => {
         if(code.length >= 4) {
-            devicesQuery({ variables: { code }});
+            devicesQuery({ variables: { code, sites: site.sectionsArray.map(value => value.id + '') }});
         }
     }, [code]);
 

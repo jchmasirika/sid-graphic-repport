@@ -27,7 +27,7 @@ import {
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { endOfMonth, startOfMonth } from "date-fns";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Site } from "./types";
 import { PARKING_SITES } from "./api";
 import { Collection, QueryData } from "src/api/types";
@@ -35,6 +35,7 @@ import { Check, ExpandCircleDownSharp, HighlightOff, SearchOutlined, Today } fro
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import Chart from "src/components/Recipes/Chart";
 import { useQuery } from "src/api/query";
+import { AuthtContext } from "src/api/account";
 
 
 const DashboardRecipes: React.FC = () => {
@@ -42,7 +43,8 @@ const DashboardRecipes: React.FC = () => {
     // const [sitesQuery, { data , loading, error }] = useLazyQuery<{ taxeParkingSites: Collection<Site>}>(PARKING_SITES);
     const { fetch, data: sites, loading, error } = useQuery<Site, { taxeParkingSites: Collection<Site>}>(PARKING_SITES);
     const[selectedSites, setSelectedSites] = useState<Site[]>([]);
-    
+    const { person: { site }} = useContext(AuthtContext);
+
     const goToThisMonth = () => {
         setDate(startOfMonth(Date.now()));
     };
@@ -84,7 +86,7 @@ const DashboardRecipes: React.FC = () => {
                                 }}
                                 fullWidth
                             >
-                                {sites?.sort(sortByName).map(site => (
+                                {sites?.filter(value => site?.sectionsArray.map(section => section.id).includes(value._id)).sort(sortByName).map(site => (
                                     <MenuItem key={site.id.toString()} value={site}>{site.name}</MenuItem>
                                 ))}
                             </Select>

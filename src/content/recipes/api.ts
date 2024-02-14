@@ -37,8 +37,8 @@ export const PARKING_SESSIONS = gql `
 `;
 
 export const PARKINGS = gql `
-    query getParking($name: String!){
-        parkings(name: $name) {
+    query getParking($name: String!, $sites: [String]){
+        parkings(name: $name, site_list: $sites) {
             totalCount
             edges {
                 node {
@@ -54,8 +54,8 @@ export const PARKINGS = gql `
 `;
 
 export const DEVICE_BILLERS = gql `
-    query getDeviceBiller($code: String, $state: String) {
-        deviceBillers(code: $code, state: $state) {
+    query getDeviceBiller($code: String, $state: String, $sites: [String]) {
+        deviceBillers(code: $code, state: $state, site_list: $sites) {
             totalCount
             edges {
                 node {

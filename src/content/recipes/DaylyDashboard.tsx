@@ -27,7 +27,7 @@ import {
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { endOfDay, endOfMonth, startOfDay, startOfMonth } from "date-fns";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Site } from "./types";
 import { PARKING_SITES } from "./api";
 import { Collection, QueryData } from "src/api/types";
@@ -35,6 +35,7 @@ import { Check, HighlightOff, SearchOutlined, Today } from "@mui/icons-material"
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import Chart from "src/components/Recipes/Chart";
 import { useQuery } from "src/api/query";
+import { AuthtContext } from "src/api/account";
 
 
 const DaylyDashboardRecipes: React.FC = () => {
@@ -42,6 +43,7 @@ const DaylyDashboardRecipes: React.FC = () => {
     // const [sitesQuery, { data , loading, error }] = useLazyQuery<{ taxeParkingSites: Collection<Site>}>(PARKING_SITES);
     const { fetch, data: sites, loading, error } = useQuery<Site, { taxeParkingSites: Collection<Site>}>(PARKING_SITES);
     const[selectedSites, setSelectedSites] = useState<Site[]>([]);
+    const { person: { site }} = useContext(AuthtContext);
 
     const goToToday = () => {
         setDate(startOfDay(Date.now()));
@@ -83,7 +85,7 @@ const DaylyDashboardRecipes: React.FC = () => {
                                 }}
                                 fullWidth
                             >
-                                {sites?.sort(sortByName).map(site => (
+                                {sites?.filter(value => site?.sectionsArray.map(section => section.id).includes(value._id)).sort(sortByName).map(site => (
                                     <MenuItem key={site.id.toString()} value={site}>{site.name}</MenuItem>
                                 ))}
                             </Select>
@@ -123,9 +125,7 @@ const DaylyDashboardRecipes: React.FC = () => {
             <Grid container spacing={2}>
                 {selectedSites?.sort(sortByName).map((site, index) => (
                     <Grid item xs={12} md={6} key={index + ''}>
-                        <Tooltip placement="bottom" title={site?.sectionsArray.length - 1 > 0 ? site.sectionsArray.map(site => site.name).join(', ') : 'Aucun sous site'}>
-                            <Chart site={site} date={date} endDate={endOfDay(date)} adaptBy="day" chartType='donut' />
-                        </Tooltip>
+                        <Chart site={site} date={date} endDate={endOfDay(date)} adaptBy="day" chartType='donut' />
                     </Grid>
                 ))}
                 {selectedSites.length === 0 && (
