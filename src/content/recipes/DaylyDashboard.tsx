@@ -86,6 +86,7 @@ const DaylyDashboardRecipes: React.FC = () => {
                                 fullWidth
                             >
                                 {sites?.filter(value => site?.sectionsArray.map(section => section.id).includes(value._id)).sort(sortByName).map(site => (
+                                    // @ts-ignore
                                     <MenuItem key={site.id.toString()} value={site}>{site.name}</MenuItem>
                                 ))}
                             </Select>

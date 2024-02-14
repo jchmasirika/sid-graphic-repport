@@ -1,6 +1,7 @@
 {
   "name": "admin-dashboard",
   "version": "2.0.0",
+  "homepage": "/home",
   "title": "Admin Dashboard",
   "author": {
     "name": "Joachim Masirika"
