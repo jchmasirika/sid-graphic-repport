@@ -2,7 +2,7 @@ import { gql, useQuery } from "@apollo/client";
 import { createContext, useEffect } from "react";
 import { Site } from "src/content/recipes/types";
 
-const GET_ACCOUNT = gql `
+export const GET_ACCOUNT = gql `
 query getAccount($id: ID!){
     account(id: $id){
       username

@@ -4,43 +4,66 @@ import router from 'src/router';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 
-import { CssBaseline, LinearProgress } from '@mui/material';
+import { CssBaseline, Grid, LinearProgress, Typography } from '@mui/material';
 import ThemeProvider from './theme/ThemeProvider';
-import { Account, AuthtContext, useGetAccount } from './api/account';
+import { Account, AuthtContext, GET_ACCOUNT } from './api/account';
 import { useEffect, useState } from 'react';
+import { useLazyQuery } from '@apollo/client';
+import { WifiOff } from '@mui/icons-material';
+import Status500 from './content/pages/Status/Status500';
 
 function App() {
   const content = useRoutes(router);
-  const [account, setAccount] = useState<Account|undefined>(undefined);
+  const [fetchUser, {data, error}] = useLazyQuery<{ account: Account}, {id: string }>(GET_ACCOUNT);
+  const [loading, setLoading] = useState(false);
+
+  const getUser = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/login');
+      if(!response.ok) {
+        throw new Error('Erreur lors de la réception des données');
+      }
+
+      const data = await response.json();
+      if(data?.id) {
+        await fetchUser({ variables: { id: '/api/accounts/' + data.id }});
+      } else {
+        throw new Error('Reponse incorrecte');
+      }
+    } catch (error) {
+      console.log(error); 
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    fetch('/api/login')
-        .then((data) => {
-            if(data.ok)
-                return data.json();
-            throw new Error('Erreur lors de la reception des données');
-        })
-        .then((data) => {
-            if(data?.id){  
-              const { account } = useGetAccount("/api/accounts/" + data.id);
-              // const { account } = useGetAccount("/api/accounts/141");
-              setAccount(account);
-            }
-        })
-        .catch((e) => console.log(e));
+    getUser();
   }, []);
 
 
-  if(!account) {
+  if(loading) {
     return (
       <ThemeProvider>
         <CssBaseline/>
         <LinearProgress sx={{ margin: 5 }} />
+        <Typography sx={{ margin: 5, textAlign: 'center' }}>Chargement du compte utilisateur</Typography>
+      </ThemeProvider>
+    )
+  };
+  if(error || !data?.account) {
+    return (
+      <ThemeProvider>
+        <CssBaseline/>
+        <Status500 reason='Impossible de récuperer le compte utilisateur'/>
       </ThemeProvider>
     )
   }
+
+
   return (
-    <AuthtContext.Provider value={account}>
+    <AuthtContext.Provider value={data?.account}>
       <ThemeProvider>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <CssBaseline />
